@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Strait-AI</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="static/styles.css"/>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -17,8 +17,8 @@
 
     <div class="main">
       <div class="header">
-        <h1>Strait-AI</h1>
         <button id="toggle-history" class="hamburger">☰</button>
+        <h1 contenteditable="true" id="chat-title">Strait-AI</h1>
         <div id="egg-menu" class="egg-menu hidden">
           <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
         </div>
@@ -34,6 +34,6 @@
     </div>
   </div>
 
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <script src="static/script.js"></script>
 </body>
 </html>
