@@ -5,7 +5,8 @@ import os
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
-model_name = "microsoft/DialoGPT-small"
+# Load distilled GPT-2 model and tokenizer
+model_name = "distilgpt2"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForCausalLM.from_pretrained(model_name)
 
@@ -17,26 +18,29 @@ def index():
 def chat():
     user_input = request.get_json().get("query", "").strip()
     if not user_input:
-        return jsonify({"response": "Say something first bruh"})
+        return jsonify({"response": "Say something first, bruh 😅"})
 
-    input_ids = tokenizer.encode(user_input + tokenizer.eos_token, return_tensors="pt")
+    # Chat-style prompt format
+    prompt = f"You: {user_input}\nAI:"
+    input_ids = tokenizer.encode(prompt, return_tensors="pt")
 
     try:
         response_ids = model.generate(
             input_ids,
-            max_length=1000,
+            max_length=200,
             pad_token_id=tokenizer.eos_token_id,
             do_sample=True,
             top_k=50,
             top_p=0.95,
-            temperature=0.75
+            temperature=0.8
         )
 
         output = tokenizer.decode(response_ids[:, input_ids.shape[-1]:][0], skip_special_tokens=True).strip()
         return jsonify({"response": output})
 
     except Exception as e:
-        return jsonify({"response": "brain fart 💀", "error": str(e)})
+        print("Error:", e)
+        return jsonify({"response": "Ughh... brain fart 😵‍💫"})
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
