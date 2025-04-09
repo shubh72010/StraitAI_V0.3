@@ -5,7 +5,7 @@ import os
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
-model_name = "microsoft/DialoGPT-medium"
+model_name = "microsoft/DialoGPT-small"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForCausalLM.from_pretrained(model_name)
 
