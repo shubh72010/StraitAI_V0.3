@@ -4,40 +4,27 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Strait-AI</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <link rel="stylesheet" href="static/styles.css"/>
 </head>
 <body>
   <div class="container">
-    <!-- Sidebar -->
-    <div class="sidebar" id="chat-list">
-      <!-- Chat history goes here -->
+    <div class="sidebar">
+      <p class="message">This is HTML content in the Sidebar. The CSS should apply a dark background color and a red accent.</p>
     </div>
 
-    <!-- Main Chat Area -->
     <div class="main">
       <div class="header">
-        <button id="toggle-history" class="hamburger">☰</button>
-        <h1 contenteditable="true" id="chat-title">Strait-AI</h1>
-        <div id="egg-menu" class="egg-menu hidden">
-          <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
-        </div>
+        <h1>This is HTML content in the Header. The CSS should give it a centered title with red color.</h1>
       </div>
 
-      <div id="chat-box" class="chat-box">
-        <!-- Chat messages will appear here -->
+      <div class="chat-box">
+        <p>This is HTML content inside the Chat Box. It should be centered and have a dark background.</p>
       </div>
 
       <div class="input-area">
-        <input id="user-input" type="text" placeholder="Type something..." />
-        <button onclick="sendMessage()">Send</button>
-        <button onclick="startNewChat()">New Chat</button>
+        <p class="message">This is HTML content in the Input Area. It should have a light red background color with white text.</p>
       </div>
     </div>
   </div>
-
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
