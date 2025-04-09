@@ -3,13 +3,12 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Arial', sans-serif;
-  scroll-behavior: smooth;
+  font-family: Arial, sans-serif;
 }
 
 /* General Body Styling */
 body {
-  background-color: #121212;
+  background-color: #121212; /* Dark background for the whole page */
   color: white;
   font-size: 16px;
   display: flex;
@@ -17,198 +16,69 @@ body {
   min-height: 100vh;
 }
 
-/* Sidebar */
+/* Sidebar Styling */
 .sidebar {
   width: 260px;
-  background-color: #2a2a2a;
-  height: 100%;
+  background-color: #2a2a2a; /* Dark gray sidebar background */
   padding: 20px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 100;
-  overflow-y: auto;
-  transition: transform 0.3s ease;
+  height: 100%;
+  color: #ff4b2b; /* Red color for text */
 }
 
-.sidebar.hidden {
-  transform: translateX(-100%);
+.sidebar .message {
+  font-size: 20px;
+  text-align: center;
+  background-color: #444; /* Dark background for the message */
+  padding: 10px;
+  border-radius: 5px;
 }
 
-/* Main Area */
+/* Main Area Styling */
 .main {
-  margin-left: 260px;
+  margin-left: 260px; /* Space for sidebar */
   display: flex;
   flex-direction: column;
   padding: 20px;
   flex: 1;
-  transition: margin-left 0.3s ease;
+  color: #ff4b2b; /* Red color for text */
 }
 
-.sidebar.hidden + .main {
-  margin-left: 0;
-}
-
-/* Header */
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #1e1e1e;
-  padding: 15px 20px;
-  color: white;
-  position: sticky;
-  top: 0;
-  z-index: 90;
-}
-
-.hamburger {
-  background: transparent;
-  border: none;
-  color: white;
-  font-size: 24px;
-  cursor: pointer;
-}
-
-h1 {
+/* Header Styling */
+.header h1 {
   font-size: 2rem;
-  color: #ff4b2b;
-  margin: 0;
-  cursor: pointer;
-}
-
-h1[contenteditable="true"]:focus {
-  outline: none;
-  background-color: #333;
+  color: #ff4b2b; /* Red color for header */
+  text-align: center;
+  margin-bottom: 20px;
+  background-color: #1e1e1e; /* Dark background for header */
+  padding: 10px;
   border-radius: 5px;
-  padding: 5px;
 }
 
-/* Chat Box */
+/* Chat Box Styling */
 .chat-box {
-  background: #1e1e1e;
+  background-color: #1e1e1e; /* Dark background for the chat box */
   border-radius: 10px;
   padding: 20px;
   margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  flex-grow: 1;
-  max-height: calc(100vh - 220px);
-  overflow-y: auto;
 }
 
-/* Message Styling */
-.message {
-  max-width: 80%;
-  padding: 10px;
-  margin: 5px 0;
-  border-radius: 10px;
-  opacity: 0;
-  animation: fadeIn 0.5s ease-in-out forwards, slideUp 0.3s ease-in-out;
+.chat-box p {
+  color: #fff; /* White color for text */
+  text-align: center;
+  font-size: 18px;
 }
 
-.bot-message {
-  background: #444;
-  color: white;
-  align-self: flex-start;
-}
-
-.user-message {
-  background: #ff4b2b;
-  color: white;
-  align-self: flex-end;
-}
-
-.typing {
-  background: #444;
-  padding: 10px;
-  border-radius: 10px;
-  align-self: flex-start;
-  font-style: italic;
-  opacity: 0;
-  animation: fadeIn 0.3s ease-in-out forwards;
-}
-
-/* Input Area */
+/* Input Area Styling */
 .input-area {
   display: flex;
-  padding: 10px;
-  background: #1e1e1e;
-  border-top: 1px solid #333;
+  justify-content: center;
+  margin-top: 20px;
 }
 
-input {
-  flex: 1;
-  padding: 12px;
-  border: none;
+.input-area .message {
   font-size: 16px;
-  background: #333;
-  color: white;
+  color: #ff4b2b; /* Red color for text */
+  background-color: #444; /* Dark background for the message */
+  padding: 10px;
   border-radius: 5px;
-  outline: none;
-}
-
-button {
-  background: #ff4b2b;
-  color: white;
-  border: none;
-  padding: 12px 20px;
-  font-size: 1rem;
-  cursor: pointer;
-  border-radius: 5px;
-  margin-left: 10px;
-  transition: transform 0.2s ease-in-out, background 0.3s;
-}
-
-button:hover {
-  transform: scale(1.05);
-  background: #ff6f50;
-}
-
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .sidebar {
-    width: 100%;
-    position: absolute;
-    transform: translateX(-100%);
-  }
-
-  .sidebar.show {
-    transform: translateX(0);
-  }
-
-  .main {
-    margin-left: 0;
-  }
-
-  .chat-container {
-    width: 95%;
-  }
-
-  h1 {
-    font-size: 1.8rem;
-  }
-
-  button {
-    font-size: 0.9rem;
-    padding: 8px 14px;
-  }
 }
