@@ -4,29 +4,36 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Strait-AI</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
-  <!-- Firebase CDN -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js"></script>
+  <link rel="stylesheet" href="styles.css"/>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 </head>
-<body style="display: flex;">
-  <div class="sidebar" id="sidebar">
-    <h2>Saved Chats</h2>
-    <div id="chat-list"></div>
-    <button onclick="startNewChat()">+ New Chat</button>
-  </div>
+<body>
+  <div class="container">
+    <div class="sidebar" id="chat-list">
+      <!-- Chat history goes here -->
+    </div>
 
-  <div class="chat-container">
-    <h1>Strait-AI</h1>
-    <div class="chat-box" id="chat-box"></div>
-    <div class="input-area">
-      <input type="text" id="user-input" placeholder="Ask something..." autocomplete="off">
-      <button onclick="sendMessage()">Send</button>
+    <div class="main">
+      <div class="header">
+        <h1>Strait-AI</h1>
+        <button id="toggle-history" class="hamburger">☰</button>
+        <div id="egg-menu" class="egg-menu hidden">
+          <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+        </div>
+      </div>
+
+      <div id="chat-box" class="chat-box"></div>
+
+      <div class="input-area">
+        <input id="user-input" type="text" placeholder="Type something..." />
+        <button onclick="sendMessage()">Send</button>
+        <button onclick="startNewChat()">New Chat</button>
+      </div>
     </div>
   </div>
 
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <script src="script.js"></script>
 </body>
 </html>
