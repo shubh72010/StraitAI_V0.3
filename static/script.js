@@ -3,12 +3,13 @@ const userInput = document.getElementById("user-input");
 const API_URL = "/api/chat";
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyD6qceA3bsMVb5fAE--699_omZEQxLCeAM",
+  authDomain: "straitai-v03.firebaseapp.com",
+  projectId: "straitai-v03",
+  storageBucket: "straitai-v03.appspot.com",
+  messagingSenderId: "365452252559",
+  appId: "1:365452252559:web:c83fdf6109666f1c7027fa",
+  measurementId: "G-XYL9Y3QB0W"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -17,13 +18,12 @@ const db = firebase.firestore();
 let uid = null;
 let currentChatId = null;
 
-// Firebase Login
+// Auth and load chats
 firebase.auth().signInAnonymously().then(() => {
   uid = firebase.auth().currentUser.uid;
   loadChats(uid);
 });
 
-// Load Saved Chats
 function loadChats(uid) {
   db.collection("users").doc(uid).collection("chats")
     .orderBy("timestamp", "desc")
@@ -31,11 +31,10 @@ function loadChats(uid) {
     .then(snapshot => {
       const chatList = document.getElementById("chat-list");
       chatList.innerHTML = "";
-
       snapshot.forEach(doc => {
         const chat = doc.data();
         const chatDiv = document.createElement("div");
-        chatDiv.textContent = chat.title || "Untitled Chat";
+        chatDiv.textContent = chat.title || "New Chat";
         chatDiv.onclick = () => {
           currentChatId = doc.id;
           chatBox.innerHTML = "";
