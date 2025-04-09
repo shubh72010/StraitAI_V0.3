@@ -59,7 +59,6 @@ function sendMessage() {
   const message = userInput.value.trim();
   if (message === "" || !currentChatId) return;
 
-  handleEasterEggs(message);
   displayMessage("You", message, "user-message");
   saveMessage("user", message);
   userInput.value = "";
@@ -108,7 +107,7 @@ function loadChatHistory(uid, chatId) {
 
 function displayMessage(name, text, type, isThinking = false) {
   let messageDiv = document.createElement("div");
-  messageDiv.classList.add("message", "slide-in", type);
+  messageDiv.classList.add("message", type);
 
   let nameDiv = document.createElement("div");
   nameDiv.classList.add("username");
@@ -141,27 +140,11 @@ function animateDots(element) {
   element.dataset.interval = interval;
 }
 
+// Hamburger Easter Egg
 document.getElementById("toggle-history").addEventListener("click", () => {
-  document.getElementById("chat-list").classList.toggle("visible");
   document.getElementById("egg-menu").classList.toggle("hidden");
 });
 
 function toggleDarkMode() {
-  document.body.classList.toggle("dark-mode");
-  document.getElementById("egg-menu").classList.add("hidden");
-}
-
-function handleEasterEggs(message) {
-  const lower = message.toLowerCase();
-
-  if (lower === "open sesame") {
-    alert("✨ You've unlocked the secret menu!");
-    document.getElementById("egg-menu").classList.remove("hidden");
-  }
-
-  if (lower === "wake up") {
-    const sidebar = document.getElementById("chat-list");
-    sidebar.classList.add("shake");
-    setTimeout(() => sidebar.classList.remove("shake"), 500);
-  }
+  document.body.classList.toggle("dark");
 }
