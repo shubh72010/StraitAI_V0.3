@@ -18,7 +18,6 @@ const db = firebase.firestore();
 let uid = null;
 let currentChatId = null;
 
-// Auth and load chats
 firebase.auth().signInAnonymously().then(() => {
   uid = firebase.auth().currentUser.uid;
   loadChats(uid);
@@ -60,6 +59,7 @@ function sendMessage() {
   const message = userInput.value.trim();
   if (message === "" || !currentChatId) return;
 
+  handleEasterEggs(message);
   displayMessage("You", message, "user-message");
   saveMessage("user", message);
   userInput.value = "";
@@ -139,4 +139,29 @@ function animateDots(element) {
     count++;
   }, 500);
   element.dataset.interval = interval;
+}
+
+document.getElementById("toggle-history").addEventListener("click", () => {
+  document.getElementById("chat-list").classList.toggle("visible");
+  document.getElementById("egg-menu").classList.toggle("hidden");
+});
+
+function toggleDarkMode() {
+  document.body.classList.toggle("dark-mode");
+  document.getElementById("egg-menu").classList.add("hidden");
+}
+
+function handleEasterEggs(message) {
+  const lower = message.toLowerCase();
+
+  if (lower === "open sesame") {
+    alert("✨ You've unlocked the secret menu!");
+    document.getElementById("egg-menu").classList.remove("hidden");
+  }
+
+  if (lower === "wake up") {
+    const sidebar = document.getElementById("chat-list");
+    sidebar.classList.add("shake");
+    setTimeout(() => sidebar.classList.remove("shake"), 500);
+  }
 }
