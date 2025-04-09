@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, url_for
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 import os
@@ -20,7 +20,6 @@ def chat():
     if not user_input:
         return jsonify({"response": "Say something first, bruh 😅"})
 
-    # Chat-style prompt format
     prompt = f"You: {user_input}\nAI:"
     input_ids = tokenizer.encode(prompt, return_tensors="pt")
 
