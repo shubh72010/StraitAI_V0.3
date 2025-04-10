@@ -1,11 +1,10 @@
-from flask import Flask, request, jsonify, render_template, url_for
+from flask import Flask, request, jsonify, render_template
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 import os
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
-# Load distilled GPT-2 model and tokenizer
 model_name = "distilgpt2"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForCausalLM.from_pretrained(model_name)
