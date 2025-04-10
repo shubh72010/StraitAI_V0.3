@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 from transformers import AutoModelForCausalLM, AutoTokenizer
-import torch
-import os
+import torch, os
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
