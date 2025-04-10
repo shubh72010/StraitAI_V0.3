@@ -1,33 +1,13 @@
-// Firebase Setup
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MSG_ID",
-  appId: "YOUR_APP_ID"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-let userId;
-
-firebase.auth().signInAnonymously().then(res => {
-  userId = res.user.uid;
-  loadChatHistory();
-});
-
 async function sendMessage() {
   const input = document.getElementById("user-input");
   const msg = input.value.trim();
   if (!msg) return;
 
-  const timestamp = Date.now();
+  const timestamp = new Date().toISOString();
   addMessage("user", msg, timestamp);
-  saveMessage("user", msg, timestamp);
   input.value = "";
 
-  addTypingIndicator();
+  showTypingIndicator();
 
   const res = await fetch("/api/chat", {
     method: "POST",
@@ -36,10 +16,13 @@ async function sendMessage() {
   });
 
   const data = await res.json();
-  removeTypingIndicator();
-  const botTime = Date.now();
-  addMessage("bot", data.response, botTime);
-  saveMessage("bot", data.response, botTime);
+  hideTypingIndicator();
+
+  const replyTime = new Date().toISOString();
+  addMessage("bot", data.response, replyTime);
+
+  saveToFirestore("user", msg, timestamp);
+  saveToFirestore("bot", data.response, replyTime);
 }
 
 function addMessage(sender, text, timestamp) {
@@ -49,12 +32,13 @@ function addMessage(sender, text, timestamp) {
   msg.classList.add("message", sender === "user" ? "user-message" : "bot-message");
 
   const content = document.createElement("div");
-  content.classList.add("text");
   content.textContent = text;
 
-  const time = document.createElement("div");
-  time.classList.add("timestamp");
-  time.textContent = new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const time = document.createElement("small");
+  time.textContent = new Date(timestamp).toLocaleTimeString();
+  time.style.display = "block";
+  time.style.fontSize = "0.7rem";
+  time.style.opacity = 0.6;
 
   msg.appendChild(content);
   msg.appendChild(time);
@@ -62,66 +46,39 @@ function addMessage(sender, text, timestamp) {
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-function saveMessage(sender, text, timestamp) {
-  db.collection("chats").doc(userId).collection("messages").add({ sender, text, timestamp });
-}
-
-function loadChatHistory() {
+function showTypingIndicator() {
   const chatBox = document.getElementById("chat-box");
-  chatBox.innerHTML = "";
 
-  db.collection("chats").doc(userId).collection("messages").orderBy("timestamp")
-    .get().then(snapshot => {
-      snapshot.forEach(doc => {
-        const msg = doc.data();
-        addMessage(msg.sender, msg.text, msg.timestamp);
-      });
-    });
-}
-
-function startNewChat() {
-  document.getElementById("chat-box").innerHTML = "";
-  db.collection("chats").doc(userId).collection("messages").get().then(snapshot => {
-    const batch = db.batch();
-    snapshot.docs.forEach(doc => batch.delete(doc.ref));
-    return batch.commit();
-  });
-  document.getElementById("chat-title").textContent = "New Chat";
-}
-
-function addTypingIndicator() {
-  const chatBox = document.getElementById("chat-box");
   const typing = document.createElement("div");
-  typing.id = "typing";
-  typing.classList.add("bot-message");
+  typing.id = "typing-indicator";
+  typing.className = "bot-message typing-dots";
+  typing.innerHTML = "<span></span><span></span><span></span>";
 
-  const dots = document.createElement("div");
-  dots.classList.add("typing-indicator");
-  dots.innerHTML = '<span></span><span></span><span></span>';
-
-  typing.appendChild(dots);
   chatBox.appendChild(typing);
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-function removeTypingIndicator() {
-  const typing = document.getElementById("typing");
+function hideTypingIndicator() {
+  const typing = document.getElementById("typing-indicator");
   if (typing) typing.remove();
 }
 
-document.addEventListener("dblclick", (e) => {
-  if (e.target.classList.contains("text")) {
-    e.target.setAttribute("contenteditable", "true");
-    e.target.focus();
-  }
-});
-
-document.addEventListener("blur", (e) => {
-  if (e.target.classList.contains("text")) {
-    e.target.removeAttribute("contenteditable");
-  }
-}, true);
-
-function toggleDarkMode() {
-  document.body.classList.toggle("dark");
+function startNewChat() {
+  document.getElementById("chat-box").innerHTML = "";
 }
+
+function saveToFirestore(sender, text, time) {
+  db.collection("chats").add({
+    sender,
+    text,
+    timestamp: time
+  });
+}
+
+window.onload = async () => {
+  const snapshot = await db.collection("chats").orderBy("timestamp").get();
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    addMessage(data.sender, data.text, data.timestamp);
+  });
+};
