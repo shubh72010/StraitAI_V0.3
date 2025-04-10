@@ -33,10 +33,8 @@ def chat():
             top_p=0.95,
             temperature=0.8
         )
-
         output = tokenizer.decode(response_ids[:, input_ids.shape[-1]:][0], skip_special_tokens=True).strip()
         return jsonify({"response": output})
-
     except Exception as e:
         print("Error:", e)
         return jsonify({"response": "Ughh... brain fart 😵‍💫"})
