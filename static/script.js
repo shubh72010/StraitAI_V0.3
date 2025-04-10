@@ -1,115 +1,119 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-import {
-  getFirestore, collection, doc, addDoc, setDoc,
-  getDocs, getDoc, onSnapshot
-} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-import {
-  getAuth, onAuthStateChanged, signInAnonymously
-} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+const chatBox = document.getElementById("chat-box");
+const userInput = document.getElementById("user-input");
+const sendBtn = document.getElementById("send-btn");
 
-// Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyD6qceA3bsMVb5fAE--699_omZEQxLCeAM",
-  authDomain: "straitai-v03.firebaseapp.com",
-  projectId: "straitai-v03",
-  storageBucket: "straitai-v03.appspot.com",
-  messagingSenderId: "365452252559",
-  appId: "1:365452252559:web:c83fdf6109666f1c7027fa",
-  measurementId: "G-XYL9Y3QB0W"
-};
+// Firebase Setup (adjust config in HTML if needed)
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+let currentUser = null;
+let typingBubble = null;
 
-let userId = null;
-let chatId = "default"; // could be dynamic later
+// Sign in anonymously
+auth.signInAnonymously().catch(console.error);
 
-onAuthStateChanged(auth, async (user) => {
+// Track auth state
+auth.onAuthStateChanged((user) => {
   if (user) {
-    userId = user.uid;
-    loadMessages();
-  } else {
-    await signInAnonymously(auth);
+    currentUser = user;
+    loadChatHistory();
   }
 });
 
-async function sendMessage() {
-  const input = document.getElementById("user-input");
-  const msg = input.value.trim();
-  if (!msg) return;
-
-  const timestamp = new Date().toISOString();
-  addMessage("user", msg, timestamp);
-  saveMessage("user", msg, timestamp);
-  input.value = "";
-
-  addTypingIndicator();
-
-  const res = await fetch("/api/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query: msg })
-  });
-
-  const data = await res.json();
-  const botTimestamp = new Date().toISOString();
-  removeTypingIndicator();
-  addMessage("bot", data.response, botTimestamp);
-  saveMessage("bot", data.response, botTimestamp);
+// Load chat from Firestore
+function loadChatHistory() {
+  db.collection("users")
+    .doc(currentUser.uid)
+    .collection("chats")
+    .doc("main")
+    .collection("messages")
+    .orderBy("timestamp")
+    .get()
+    .then((querySnapshot) => {
+      chatBox.innerHTML = "";
+      querySnapshot.forEach((doc) => {
+        const msg = doc.data();
+        addMessage(msg.sender, msg.text, msg.timestamp.toDate());
+      });
+    });
 }
 
-function addMessage(sender, text, timestamp) {
-  const chatBox = document.getElementById("chat-box");
+// Save chat to Firestore
+function saveMessage(sender, text, timestamp) {
+  db.collection("users")
+    .doc(currentUser.uid)
+    .collection("chats")
+    .doc("main")
+    .collection("messages")
+    .add({ sender, text, timestamp: firebase.firestore.Timestamp.fromDate(timestamp) });
+}
+
+// Add message to UI
+function addMessage(sender, text, time = new Date()) {
   const msg = document.createElement("div");
   msg.classList.add("message", sender === "user" ? "user-message" : "bot-message");
 
   const content = document.createElement("div");
-  content.classList.add("text");
   content.textContent = text;
-
-  const time = document.createElement("div");
-  time.classList.add("timestamp");
-  time.textContent = new Date(timestamp).toLocaleTimeString();
-
   msg.appendChild(content);
-  msg.appendChild(time);
+
+  const timestamp = document.createElement("div");
+  timestamp.className = "timestamp";
+  timestamp.textContent = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  msg.appendChild(timestamp);
+
   chatBox.appendChild(msg);
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-function addTypingIndicator() {
-  const chatBox = document.getElementById("chat-box");
-  const typing = document.createElement("div");
-  typing.id = "typing-indicator";
-  typing.classList.add("bot-message");
-  typing.textContent = "Strait-AI is thinking...";
-  chatBox.appendChild(typing);
+// Typing indicator
+function showTypingIndicator() {
+  typingBubble = document.createElement("div");
+  typingBubble.className = "bot-message message";
+  typingBubble.innerHTML = `<div class="typing-indicator">
+    <span></span><span></span><span></span>
+  </div>`;
+  chatBox.appendChild(typingBubble);
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 function removeTypingIndicator() {
-  const typing = document.getElementById("typing-indicator");
-  if (typing) typing.remove();
+  if (typingBubble) {
+    chatBox.removeChild(typingBubble);
+    typingBubble = null;
+  }
 }
 
-async function saveMessage(sender, text, timestamp) {
-  if (!userId) return;
-  const msgData = {
-    sender,
-    text,
-    timestamp
-  };
-  await addDoc(collection(db, "users", userId, "chats", chatId, "messages"), msgData);
+// Handle send
+function handleSend() {
+  const query = userInput.value.trim();
+  if (!query) return;
+
+  addMessage("user", query);
+  saveMessage("user", query, new Date());
+
+  userInput.value = "";
+  showTypingIndicator();
+
+  fetch("/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      removeTypingIndicator();
+      addMessage("bot", data.response);
+      saveMessage("bot", data.response, new Date());
+    })
+    .catch((err) => {
+      removeTypingIndicator();
+      addMessage("bot", "Something went wrong...");
+      console.error(err);
+    });
 }
 
-async function loadMessages() {
-  const chatBox = document.getElementById("chat-box");
-  chatBox.innerHTML = "";
-  const msgs = await getDocs(collection(db, "users", userId, "chats", chatId, "messages"));
-  msgs.forEach((doc) => {
-    const { sender, text, timestamp } = doc.data();
-    addMessage(sender, text, timestamp);
-  });
-}
+sendBtn.addEventListener("click", handleSend);
+userInput.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") handleSend();
+});
