@@ -1,4 +1,13 @@
-// Firebase config and init
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import {
+  getFirestore, collection, doc, addDoc, setDoc,
+  getDocs, getDoc, onSnapshot
+} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+import {
+  getAuth, onAuthStateChanged, signInAnonymously
+} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyD6qceA3bsMVb5fAE--699_omZEQxLCeAM",
   authDomain: "straitai-v03.firebaseapp.com",
@@ -9,89 +18,98 @@ const firebaseConfig = {
   measurementId: "G-XYL9Y3QB0W"
 };
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-let userId = localStorage.getItem("userId") || crypto.randomUUID();
-localStorage.setItem("userId", userId);
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
 
-// DOM refs
-const chatBox = document.getElementById("chat-box");
-const userInput = document.getElementById("user-input");
-const sendBtn = document.getElementById("send-btn");
+let userId = null;
+let chatId = "default"; // could be dynamic later
 
-// Message rendering
-function addMessage(content, sender) {
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    userId = user.uid;
+    loadMessages();
+  } else {
+    await signInAnonymously(auth);
+  }
+});
+
+async function sendMessage() {
+  const input = document.getElementById("user-input");
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  const timestamp = new Date().toISOString();
+  addMessage("user", msg, timestamp);
+  saveMessage("user", msg, timestamp);
+  input.value = "";
+
+  addTypingIndicator();
+
+  const res = await fetch("/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query: msg })
+  });
+
+  const data = await res.json();
+  const botTimestamp = new Date().toISOString();
+  removeTypingIndicator();
+  addMessage("bot", data.response, botTimestamp);
+  saveMessage("bot", data.response, botTimestamp);
+}
+
+function addMessage(sender, text, timestamp) {
+  const chatBox = document.getElementById("chat-box");
   const msg = document.createElement("div");
-  msg.className = `message ${sender}-message`;
-  msg.textContent = content;
+  msg.classList.add("message", sender === "user" ? "user-message" : "bot-message");
+
+  const content = document.createElement("div");
+  content.classList.add("text");
+  content.textContent = text;
+
+  const time = document.createElement("div");
+  time.classList.add("timestamp");
+  time.textContent = new Date(timestamp).toLocaleTimeString();
+
+  msg.appendChild(content);
+  msg.appendChild(time);
   chatBox.appendChild(msg);
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// Save to Firestore
-async function saveMessage(content, sender) {
-  const chatRef = db.collection("users").doc(userId).collection("chats").doc("default").collection("messages");
-  await chatRef.add({
-    sender,
-    content,
-    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-  });
-}
-
-// Load messages
-async function loadChat() {
-  const msgs = await db
-    .collection("users")
-    .doc(userId)
-    .collection("chats")
-    .doc("default")
-    .collection("messages")
-    .orderBy("timestamp")
-    .get();
-
-  msgs.forEach(doc => {
-    const { sender, content } = doc.data();
-    addMessage(content, sender);
-  });
-}
-
-// Handle send
-async function handleSend() {
-  const text = userInput.value.trim();
-  if (!text) return;
-
-  addMessage(text, "user");
-  saveMessage(text, "user");
-  userInput.value = "";
-
+function addTypingIndicator() {
+  const chatBox = document.getElementById("chat-box");
   const typing = document.createElement("div");
-  typing.className = "message bot-message";
-  typing.innerHTML = 'Typing<span class="typing-indicator"></span>';
+  typing.id = "typing-indicator";
+  typing.classList.add("bot-message");
+  typing.textContent = "Strait-AI is thinking...";
   chatBox.appendChild(typing);
   chatBox.scrollTop = chatBox.scrollHeight;
-
-  try {
-    const res = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query: text })
-    });
-
-    const data = await res.json();
-    chatBox.removeChild(typing);
-    addMessage(data.response, "bot");
-    saveMessage(data.response, "bot");
-  } catch (err) {
-    chatBox.removeChild(typing);
-    addMessage("Brain fart. Something broke.", "bot");
-  }
 }
 
-// Events
-sendBtn.addEventListener("click", handleSend);
-userInput.addEventListener("keydown", e => {
-  if (e.key === "Enter") handleSend();
-});
+function removeTypingIndicator() {
+  const typing = document.getElementById("typing-indicator");
+  if (typing) typing.remove();
+}
 
-// Init
-loadChat();
+async function saveMessage(sender, text, timestamp) {
+  if (!userId) return;
+  const msgData = {
+    sender,
+    text,
+    timestamp
+  };
+  await addDoc(collection(db, "users", userId, "chats", chatId, "messages"), msgData);
+}
+
+async function loadMessages() {
+  const chatBox = document.getElementById("chat-box");
+  chatBox.innerHTML = "";
+  const msgs = await getDocs(collection(db, "users", userId, "chats", chatId, "messages"));
+  msgs.forEach((doc) => {
+    const { sender, text, timestamp } = doc.data();
+    addMessage(sender, text, timestamp);
+  });
+}
