@@ -3,34 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Strait-AI</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <title>Strait-AI Chat</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 <body>
-  <div class="container">
-    <aside class="sidebar">
-      <h2>Chats</h2>
-      <button onclick="startNewChat()">+ New Chat</button>
-      <ul id="chat-history-list"></ul>
-    </aside>
+  <header>
+    <h1 id="chat-title">Strait-AI</h1>
+    <button onclick="startNewChat()">New Chat</button>
+    <button onclick="toggleDarkMode()">Toggle Mode</button>
+  </header>
 
-    <main class="main">
-      <header class="header">
-        <h1 id="chat-title">Strait-AI</h1>
-        <button onclick="toggleDarkMode()">Toggle Theme</button>
-      </header>
+  <div id="chat-box"></div>
 
-      <div class="chat-box" id="chat-box"></div>
-
-      <div class="input-area">
-        <input id="user-input" type="text" placeholder="Type something..." onkeydown="if(event.key==='Enter') sendMessage()" />
-        <button onclick="sendMessage()">Send</button>
-      </div>
-    </main>
+  <div id="input-area">
+    <input type="text" id="user-input" placeholder="Type your message..." />
+    <button onclick="sendMessage()">Send</button>
   </div>
 
-  <!-- Firebase -->
-  <script type="module" src="{{ url_for('static', filename='firebase.js') }}"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+
+  <!-- Firebase Config -->
+  <script src="{{ url_for('static', filename='firebase-config.js') }}"></script>
 
   <!-- Main Script -->
   <script src="{{ url_for('static', filename='script.js') }}"></script>
