@@ -1,27 +1,38 @@
-<!-- index.html --><!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Strait-AI</title>
-  <link rel="stylesheet" href="/static/style.css">
-  <script type="module" src="/static/firebase.js"></script>
-  <script defer src="/static/script.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-  <div class="app">
+  <div class="container">
     <aside class="sidebar">
+      <h2>Chats</h2>
       <button onclick="startNewChat()">+ New Chat</button>
+      <ul id="chat-history-list"></ul>
     </aside>
-    <main class="chat-container">
-      <header class="chat-header">
+
+    <main class="main">
+      <header class="header">
         <h1 id="chat-title">Strait-AI</h1>
+        <button onclick="toggleDarkMode()">Toggle Theme</button>
       </header>
-      <div id="chat-box" class="chat-box"></div>
-      <form class="input-area" onsubmit="sendMessage(); return false;">
-        <input id="user-input" type="text" placeholder="Type here...">
-        <button type="submit">Send</button>
-      </form>
+
+      <div class="chat-box" id="chat-box"></div>
+
+      <div class="input-area">
+        <input id="user-input" type="text" placeholder="Type something..." onkeydown="if(event.key==='Enter') sendMessage()" />
+        <button onclick="sendMessage()">Send</button>
+      </div>
     </main>
   </div>
+
+  <!-- Firebase -->
+  <script type="module" src="{{ url_for('static', filename='firebase.js') }}"></script>
+
+  <!-- Main Script -->
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
