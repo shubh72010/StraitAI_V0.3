@@ -1,169 +1,118 @@
-/* Reset Default Browser Styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Arial', sans-serif;
-    scroll-behavior: smooth;
-    transition: all 0.3s ease-in-out;
-}
-
-/* Body Styling */
 body {
-    background-color: #121212;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    text-align: center;
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background-color: #121212;
+  color: #fff;
+  display: flex;
 }
 
-/* Chat Container */
-.chat-container {
-    width: 400px;
-    background: #1e1e1e;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.2);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    padding: 15px;
+.sidebar {
+  width: 200px;
+  background: #2a2a2a;
+  height: 100vh;
+  padding: 20px;
+  overflow-y: auto;
 }
 
-/* Header */
-h1 {
-    font-size: 2.5rem;
-    opacity: 0;
-    animation: fadeIn 1s ease-in-out forwards;
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
-/* Chat Box */
+.header {
+  padding: 10px 20px;
+  background: #1e1e1e;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .chat-box {
-    height: 400px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    border: 1px solid #444;
-    border-radius: 5px;
-    background: #2a2a2a;
+  flex-grow: 1;
+  padding: 20px;
+  background: #121212;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Message Bubbles */
 .message {
-    max-width: 80%;
-    padding: 10px;
-    margin: 5px 0;
-    border-radius: 10px;
-    opacity: 0;
-    animation: fadeIn 0.5s ease-in-out forwards, slideUp 0.3s ease-in-out;
+  max-width: 70%;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  position: relative;
 }
 
-/* Bot Messages */
 .bot-message {
-    background: #444;
-    color: #fff;
-    align-self: flex-start;
+  background: #444;
+  align-self: flex-start;
 }
 
-/* User Messages */
 .user-message {
-    background: #ff4b2b;
-    color: white;
-    align-self: flex-end;
+  background: #ff4b2b;
+  align-self: flex-end;
 }
 
-/* Typing Indicator */
-.typing {
-    background: #444;
-    padding: 10px;
-    border-radius: 10px;
-    align-self: flex-start;
-    font-style: italic;
-    opacity: 0;
-    animation: fadeIn 0.3s ease-in-out forwards;
+.timestamp {
+  font-size: 0.75rem;
+  color: #aaa;
+  margin-top: 2px;
 }
 
-/* Input Section */
 .input-area {
-    display: flex;
-    padding: 10px;
-    border-top: 1px solid #333;
-    background: #1e1e1e;
+  display: flex;
+  padding: 10px;
+  background: #1e1e1e;
 }
 
-input {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    outline: none;
-    font-size: 16px;
-    background: #2a2a2a;
-    color: white;
-    border-radius: 5px;
+.input-area input {
+  flex: 1;
+  padding: 10px;
+  background: #2a2a2a;
+  border: none;
+  color: white;
+  border-radius: 5px;
 }
 
-/* Button Styling */
-button {
-    background: #ff4b2b;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    border-radius: 5px;
-    margin-left: 10px;
-    transition: transform 0.2s ease-in-out, background 0.3s;
+.input-area button {
+  background: #ff4b2b;
+  color: white;
+  border: none;
+  padding: 10px;
+  margin-left: 10px;
+  cursor: pointer;
+  border-radius: 5px;
 }
 
-/* Button Hover Effect */
-button:hover {
-    transform: scale(1.05);
-    background: #ff6f50;
+.typing-indicator {
+  display: none;
+  align-self: flex-start;
+  margin-left: 20px;
+  margin-bottom: 10px;
 }
 
-/* Smooth Slide Animation */
-.slide-in {
-    transform: translateY(50px);
-    opacity: 0;
-    animation: slideUp 0.8s ease-in-out forwards;
+.typing-indicator span {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #ccc;
+  border-radius: 50%;
+  margin: 0 2px;
+  animation: bounce 1s infinite ease-in-out;
 }
 
-/* Fade-in Animation */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+.typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
 }
 
-/* Slide-up Animation */
-@keyframes slideUp {
-    from {
-        transform: translateY(50px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    h1 {
-        font-size: 2rem;
-    }
-
-    button {
-        font-size: 1rem;
-    }
-
-    .chat-container {
-        width: 90%;
-    }
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1); }
 }
