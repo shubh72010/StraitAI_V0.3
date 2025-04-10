@@ -9,22 +9,26 @@
 <body>
   <div class="container">
     <div class="sidebar">
-      <p class="message">This is HTML content in the Sidebar. The CSS should apply a dark background color and a red accent.</p>
+      <h2>Saved Chats</h2>
+      <button>+ New Chat</button>
     </div>
 
     <div class="main">
       <div class="header">
-        <h1>This is HTML content in the Header. The CSS should give it a centered title with red color.</h1>
+        <h1>Strait-AI</h1>
       </div>
 
-      <div class="chat-box">
-        <p>This is HTML content inside the Chat Box. It should be centered and have a dark background.</p>
+      <div class="chat-box" id="chat-box">
+        <!-- Chat messages go here -->
       </div>
 
       <div class="input-area">
-        <p class="message">This is HTML content in the Input Area. It should have a light red background color with white text.</p>
+        <input type="text" id="user-input" placeholder="Ask something..." />
+        <button onclick="sendMessage()">Send</button>
       </div>
     </div>
   </div>
+
+  <script src="static/script.js"></script>
 </body>
 </html>
