@@ -1,29 +1,25 @@
-<!-- index.html --><!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Strait-AI</title>
-  <link rel="stylesheet" href="/static/styles.css" />
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-  <script src="/static/firebase.js" defer></script>
-  <script src="/static/script.js" defer></script>
+  <link rel="stylesheet" href="/static/style.css" />
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <div id="container">
-    <div id="sidebar">
-      <button onclick="startNewChat()">+ New Chat</button>
-    </div>
-    <div id="main">
-      <div id="header">
-        <h1 id="chat-title">Strait-AI</h1>
-      </div>
-      <div id="chat-box"></div>
-      <div id="input-area">
-        <input type="text" id="user-input" placeholder="Type a message..." />
-        <button onclick="sendMessage()">Send</button>
-      </div>
-    </div>
+  <div class="chat-container">
+    <header class="chat-header">
+      <h1>Strait-AI</h1>
+    </header>
+    <main id="chat-box" class="chat-box"></main>
+    <footer class="chat-input">
+      <input type="text" id="user-input" placeholder="Type your message..." />
+      <button id="send-btn">Send</button>
+    </footer>
   </div>
+
+  <script src="/static/script.js"></script>
 </body>
 </html>
