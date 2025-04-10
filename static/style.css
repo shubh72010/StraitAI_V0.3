@@ -1,105 +1,169 @@
-/* === Reset and Base Styles === */
+/* Reset Default Browser Styles */
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+    scroll-behavior: smooth;
+    transition: all 0.3s ease-in-out;
 }
 
+/* Body Styling */
 body {
-  display: flex;
-  background-color: #111;
-  color: #fff;
-  height: 100vh;
-  overflow: hidden;
+    background-color: #121212;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
 }
 
-/* === Sidebar === */
-.sidebar {
-  width: 250px;
-  background-color: #1a1a1a;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.sidebar h2 {
-  color: #fff;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.sidebar button {
-  background-color: #ff4422;
-  color: #fff;
-  border: none;
-  padding: 12px;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.sidebar button:hover {
-  background-color: #ff2200;
-}
-
-/* === Main Area === */
-.main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  background-color: #121212;
+/* Chat Container */
+.chat-container {
+    width: 400px;
+    background: #1e1e1e;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 15px;
 }
 
 /* Header */
-.header {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.header h1 {
-  font-size: 2rem;
-  color: #ff4b2b;
+h1 {
+    font-size: 2.5rem;
+    opacity: 0;
+    animation: fadeIn 1s ease-in-out forwards;
 }
 
 /* Chat Box */
 .chat-box {
-  flex: 1;
-  background-color: #2b2b2b;
-  border-radius: 10px;
-  padding: 20px;
-  overflow-y: auto;
-  margin-bottom: 20px;
+    height: 400px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border: 1px solid #444;
+    border-radius: 5px;
+    background: #2a2a2a;
 }
 
-/* Input Area */
+/* Message Bubbles */
+.message {
+    max-width: 80%;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 10px;
+    opacity: 0;
+    animation: fadeIn 0.5s ease-in-out forwards, slideUp 0.3s ease-in-out;
+}
+
+/* Bot Messages */
+.bot-message {
+    background: #444;
+    color: #fff;
+    align-self: flex-start;
+}
+
+/* User Messages */
+.user-message {
+    background: #ff4b2b;
+    color: white;
+    align-self: flex-end;
+}
+
+/* Typing Indicator */
+.typing {
+    background: #444;
+    padding: 10px;
+    border-radius: 10px;
+    align-self: flex-start;
+    font-style: italic;
+    opacity: 0;
+    animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+/* Input Section */
 .input-area {
-  display: flex;
-  gap: 10px;
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #333;
+    background: #1e1e1e;
 }
 
-.input-area input {
-  flex: 1;
-  padding: 12px;
-  border-radius: 8px;
-  border: none;
-  background-color: #1a1a1a;
-  color: white;
+input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    background: #2a2a2a;
+    color: white;
+    border-radius: 5px;
 }
 
-.input-area button {
-  background-color: #ff4b2b;
-  color: white;
-  padding: 12px 20px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s ease;
+/* Button Styling */
+button {
+    background: #ff4b2b;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-left: 10px;
+    transition: transform 0.2s ease-in-out, background 0.3s;
 }
 
-.input-area button:hover {
-  background-color: #e03a1f;
+/* Button Hover Effect */
+button:hover {
+    transform: scale(1.05);
+    background: #ff6f50;
+}
+
+/* Smooth Slide Animation */
+.slide-in {
+    transform: translateY(50px);
+    opacity: 0;
+    animation: slideUp 0.8s ease-in-out forwards;
+}
+
+/* Fade-in Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Slide-up Animation */
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    button {
+        font-size: 1rem;
+    }
+
+    .chat-container {
+        width: 90%;
+    }
 }
