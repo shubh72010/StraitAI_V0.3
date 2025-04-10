@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, url_for
+from flask import Flask, request, jsonify, render_template
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 import os
@@ -40,6 +40,11 @@ def chat():
     except Exception as e:
         print("Error:", e)
         return jsonify({"response": "Ughh... brain fart 😵‍💫"})
+
+# Redirect anything not matched to index.html (like /chat-1 etc.)
+@app.route("/<path:path>")
+def catch_all(path):
+    return render_template("index.html")
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
