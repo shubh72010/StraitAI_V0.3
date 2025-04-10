@@ -1,124 +1,82 @@
-const input = document.getElementById("user-input");
-const sendButton = document.getElementById("send-btn");
-const messagesContainer = document.getElementById("messages");
+firebase.auth().onAuthStateChanged(async (user) => {
+  if (!user) {
+    await firebase.auth().signInAnonymously();
+  }
+});
+
+const chatContainer = document.getElementById("chat");
+const inputBox = document.getElementById("user-input");
+const sendBtn = document.getElementById("send-btn");
 const typingIndicator = document.getElementById("typing-indicator");
-const chatList = document.getElementById("chat-list");
-const newChatBtn = document.getElementById("new-chat");
 
-let currentChatId = null;
-let userId = null;
-let db = null;
-
-// Firebase init
-firebase.initializeApp({
-  apiKey: "AIzaSyD6qceA3bsMVb5fAE--699_omZEQxLCeAM",
-  authDomain: "straitai-v03.firebaseapp.com",
-  projectId: "straitai-v03",
-});
-db = firebase.firestore();
-
-firebase.auth().signInAnonymously().then((cred) => {
-  userId = cred.user.uid;
-  loadChats();
-});
-
-// Send message
-sendButton.onclick = () => {
-  const query = input.value.trim();
-  if (!query) return;
-
-  appendMessage("You", query, "user-message");
-  saveMessage(currentChatId, "user", query);
-
-  input.value = "";
-  showTyping(true);
-
-  fetch("/api/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query })
-  })
-    .then(res => res.json())
-    .then(data => {
-      appendMessage("AI", data.response, "bot-message");
-      saveMessage(currentChatId, "bot", data.response);
-    })
-    .catch(() => {
-      appendMessage("AI", "Ughh... brain fart 😵‍💫", "bot-message");
-    })
-    .finally(() => {
-      showTyping(false);
-    });
-};
-
-// Show/hide typing bubble
-function showTyping(show) {
-  typingIndicator.style.display = show ? "inline-block" : "none";
-}
-
-// Add message to UI
-function appendMessage(sender, text, cls) {
+function appendMessage(sender, text) {
   const msg = document.createElement("div");
-  msg.className = `message ${cls}`;
-  msg.innerText = text;
-  messagesContainer.appendChild(msg);
-  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  msg.className = sender === "user" ? "user-msg" : "ai-msg";
+  msg.textContent = text;
+  chatContainer.appendChild(msg);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
-// Save message to Firestore
-function saveMessage(chatId, sender, text) {
-  if (!chatId) return;
-  db.collection("users").doc(userId)
-    .collection("chats").doc(chatId)
-    .collection("messages").add({
+async function saveMessage(uid, chatId, sender, message, timestamp) {
+  await db
+    .collection("users")
+    .doc(uid)
+    .collection("chats")
+    .doc(chatId)
+    .collection("messages")
+    .add({
       sender,
-      text,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      message,
+      timestamp: timestamp || firebase.firestore.FieldValue.serverTimestamp(),
     });
 }
 
-// Load all user chats
-function loadChats() {
-  db.collection("users").doc(userId).collection("chats")
-    .orderBy("createdAt", "desc")
-    .get()
-    .then(snapshot => {
-      chatList.innerHTML = "";
-      snapshot.forEach(doc => {
-        const li = document.createElement("li");
-        li.innerText = doc.data().name;
-        li.onclick = () => loadMessages(doc.id);
-        chatList.appendChild(li);
-      });
-    });
-}
-
-// Load messages from Firestore
-function loadMessages(chatId) {
-  currentChatId = chatId;
-  messagesContainer.innerHTML = "";
-  db.collection("users").doc(userId)
-    .collection("chats").doc(chatId)
+async function fetchMessages(uid, chatId) {
+  const snapshot = await db
+    .collection("users")
+    .doc(uid)
+    .collection("chats")
+    .doc(chatId)
     .collection("messages")
     .orderBy("timestamp")
-    .get()
-    .then(snapshot => {
-      snapshot.forEach(doc => {
-        const { sender, text } = doc.data();
-        appendMessage(sender === "user" ? "You" : "AI", text, sender === "user" ? "user-message" : "bot-message");
-      });
-    });
+    .get();
+
+  snapshot.forEach((doc) => {
+    const msg = doc.data();
+    appendMessage(msg.sender, msg.message);
+  });
 }
 
-// Create new chat
-newChatBtn.onclick = () => {
-  const name = "Chat " + Date.now();
-  db.collection("users").doc(userId).collection("chats").add({
-    name,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  }).then(docRef => {
-    currentChatId = docRef.id;
-    messagesContainer.innerHTML = "";
-    loadChats();
+sendBtn.addEventListener("click", async () => {
+  const text = inputBox.value.trim();
+  if (!text) return;
+
+  const user = firebase.auth().currentUser;
+  const chatId = "default-chat";
+
+  appendMessage("user", text);
+  inputBox.value = "";
+  typingIndicator.style.display = "block";
+
+  await saveMessage(user.uid, chatId, "user", text);
+
+  const res = await fetch("/api/chat", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ query: text }),
   });
+
+  const data = await res.json();
+  appendMessage("ai", data.response);
+  await saveMessage(user.uid, chatId, "ai", data.response);
+  typingIndicator.style.display = "none";
+});
+
+window.onload = async () => {
+  const user = await new Promise((resolve) =>
+    firebase.auth().onAuthStateChanged((user) => resolve(user))
+  );
+  await fetchMessages(user.uid, "default-chat");
 };
