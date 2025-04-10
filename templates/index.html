@@ -1,59 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Strait-AI</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Strait-AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="container">
-        <h1>Strait-AI</h1>
-        <div id="chat-box"></div>
-        <div class="input-row">
-            <input type="text" id="user-input" placeholder="Type something...">
-            <button onclick="sendMessage()">Send</button>
-            <button onclick="startNewChat()">New Chat</button>
-        </div>
+  <div class="container">
+    <h1>Strait-AI</h1>
+    <div id="chat-box"></div>
+    <div class="input-row">
+      <input type="text" id="user-input" placeholder="Type something..." autocomplete="off">
+      <button onclick="sendMessage()">Send</button>
+      <button onclick="startNewChat()">New Chat</button>
     </div>
+  </div>
 
-    <script>
-        async function sendMessage() {
-            const input = document.getElementById("user-input");
-            const chatBox = document.getElementById("chat-box");
-            const userMessage = input.value.trim();
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById("user-input");
+      const chatBox = document.getElementById("chat-box");
+      const userMessage = input.value.trim();
 
-            if (!userMessage) return;
+      if (!userMessage) return;
 
-            const userBubble = document.createElement("div");
-            userBubble.className = "bubble user";
-            userBubble.textContent = userMessage;
-            chatBox.appendChild(userBubble);
+      const userBubble = document.createElement("div");
+      userBubble.className = "bubble user";
+      userBubble.textContent = userMessage;
+      chatBox.appendChild(userBubble);
 
-            input.value = "";
+      input.value = "";
 
-            const responseBubble = document.createElement("div");
-            responseBubble.className = "bubble ai loading";
-            responseBubble.textContent = "Typing...";
-            chatBox.appendChild(responseBubble);
+      const responseBubble = document.createElement("div");
+      responseBubble.className = "bubble ai loading";
+      responseBubble.textContent = "Typing...";
+      chatBox.appendChild(responseBubble);
+      chatBox.scrollTop = chatBox.scrollHeight;
 
-            try {
-                const res = await fetch("/api/chat", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ query: userMessage })
-                });
+      try {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: userMessage })
+        });
 
-                const data = await res.json();
-                responseBubble.textContent = data.response;
-                responseBubble.classList.remove("loading");
-            } catch (err) {
-                responseBubble.textContent = "Error... brain fried.";
-            }
-        }
+        const data = await res.json();
+        responseBubble.textContent = data.response;
+        responseBubble.classList.remove("loading");
+      } catch (err) {
+        responseBubble.textContent = "Ughh... brain fart 😵‍💫";
+      }
 
-        function startNewChat() {
-            document.getElementById("chat-box").innerHTML = "";
-        }
-    </script>
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function startNewChat() {
+      document.getElementById("chat-box").innerHTML = "";
+    }
+  </script>
 </body>
 </html>
