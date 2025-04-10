@@ -1,36 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Strait-AI</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <meta charset="UTF-8">
+    <title>Strait-AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <div class="container">
-    <div class="sidebar" id="chat-list">
-      <!-- Chat history auto-generated -->
+    <div class="container">
+        <h1>Strait-AI</h1>
+        <div id="chat-box"></div>
+        <div class="input-row">
+            <input type="text" id="user-input" placeholder="Type something...">
+            <button onclick="sendMessage()">Send</button>
+            <button onclick="startNewChat()">New Chat</button>
+        </div>
     </div>
 
-    <div class="main">
-      <div class="header">
-        <button id="toggle-history" class="hamburger">☰</button>
-        <h1 contenteditable="true" id="chat-title">Strait-AI</h1>
-      </div>
+    <script>
+        async function sendMessage() {
+            const input = document.getElementById("user-input");
+            const chatBox = document.getElementById("chat-box");
+            const userMessage = input.value.trim();
 
-      <div id="chat-box" class="chat-box"></div>
+            if (!userMessage) return;
 
-      <div class="input-area">
-        <input id="user-input" type="text" placeholder="Type something..." />
-        <button onclick="sendMessage()">Send</button>
-        <button onclick="startNewChat()">New Chat</button>
-      </div>
-    </div>
-  </div>
+            const userBubble = document.createElement("div");
+            userBubble.className = "bubble user";
+            userBubble.textContent = userMessage;
+            chatBox.appendChild(userBubble);
 
-  <script src="{{ url_for('static', filename='firebase-config.js') }}"></script>
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
+            input.value = "";
+
+            const responseBubble = document.createElement("div");
+            responseBubble.className = "bubble ai loading";
+            responseBubble.textContent = "Typing...";
+            chatBox.appendChild(responseBubble);
+
+            try {
+                const res = await fetch("/api/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ query: userMessage })
+                });
+
+                const data = await res.json();
+                responseBubble.textContent = data.response;
+                responseBubble.classList.remove("loading");
+            } catch (err) {
+                responseBubble.textContent = "Error... brain fried.";
+            }
+        }
+
+        function startNewChat() {
+            document.getElementById("chat-box").innerHTML = "";
+        }
+    </script>
 </body>
 </html>
