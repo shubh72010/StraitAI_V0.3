@@ -1,21 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
+<!-- index.html --><!DOCTYPE html><html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Strait-AI</title>
-  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="stylesheet" href="/static/style.css">
+  <script type="module" src="/static/firebase.js"></script>
+  <script defer src="/static/script.js"></script>
 </head>
 <body>
-  <div class="container">
-    <div id="chat-box" class="chat-box"></div>
-    <div class="input-box">
-      <input type="text" id="user-input" placeholder="Type your message..." />
-      <button onclick="sendMessage()">Send</button>
-    </div>
+  <div class="app">
+    <aside class="sidebar">
+      <button onclick="startNewChat()">+ New Chat</button>
+    </aside>
+    <main class="chat-container">
+      <header class="chat-header">
+        <h1 id="chat-title">Strait-AI</h1>
+      </header>
+      <div id="chat-box" class="chat-box"></div>
+      <form class="input-area" onsubmit="sendMessage(); return false;">
+        <input id="user-input" type="text" placeholder="Type here...">
+        <button type="submit">Send</button>
+      </form>
+    </main>
   </div>
-
-  <!-- Firebase + App -->
-  <script type="module" src="/static/script.js"></script>
 </body>
 </html>
