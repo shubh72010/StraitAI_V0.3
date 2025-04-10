@@ -1,4 +1,4 @@
-// Firebase config setup
+// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyD6qceA3bsMVb5fAE--699_omZEQxLCeAM",
   authDomain: "straitai-v03.firebaseapp.com",
@@ -11,3 +11,5 @@ const firebaseConfig = {
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
