@@ -1,6 +1,10 @@
 const chatBox = document.getElementById("chat-box");
 const userInput = document.getElementById("user-input");
 const API_URL = "/api/chat";
+const sidebar = document.getElementById("sidebar");
+const hamburgerMenu = document.getElementById("hamburger-menu");
+const sendButton = document.getElementById("send-button");
+const newChatButton = document.getElementById("new-chat-button");
 
 const firebaseConfig = {
   apiKey: "AIzaSyD6qceA3bsMVb5fAE--699_omZEQxLCeAM",
@@ -22,6 +26,27 @@ let currentChatId = null;
 firebase.auth().signInAnonymously().then(() => {
   uid = firebase.auth().currentUser.uid;
   loadChats(uid);
+});
+
+// Hamburger menu toggle
+hamburgerMenu.addEventListener("click", function () {
+  sidebar.classList.toggle("hidden");
+});
+
+// Send Message
+sendButton.addEventListener("click", function () {
+  sendMessage();
+});
+
+userInput.addEventListener("keyup", function (event) {
+  if (event.key === "Enter") {
+    sendMessage();
+  }
+});
+
+// New Chat Button
+newChatButton.addEventListener("click", function () {
+  startNewChat();
 });
 
 function loadChats(uid) {

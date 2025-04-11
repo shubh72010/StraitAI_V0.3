@@ -13,6 +13,26 @@ body {
     background-color: #121212;
     color: white;
     height: 100vh;
+    display: flex;
+}
+
+/* Hamburger Menu */
+.hamburger-menu {
+  display: none; /* Hidden by default */
+  cursor: pointer;
+  padding: 10px;
+  position: fixed; /* Fixed position */
+  top: 10px;
+  left: 10px;
+  z-index: 10; /* Ensure it's above other content */
+}
+
+.hamburger-menu .bar {
+  width: 25px;
+  height: 3px;
+  background-color: white;
+  margin: 5px 0;
+  transition: 0.4s;
 }
 
 /* Sidebar */
@@ -26,6 +46,14 @@ body {
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    position: fixed; /* Fixed position */
+    left: 0; /* Start on the left side */
+    transition: transform 0.3s ease-in-out; /* Smooth transition */
+    transform: translateX(0); /* Initially visible */
+}
+
+.sidebar.hidden {
+    transform: translateX(-100%); /* Slide out to the left */
 }
 
 .sidebar h2 {
@@ -50,6 +78,26 @@ body {
 
 #chat-list div:hover {
     background: #444;
+}
+
+/* Sidebar Button */
+#new-chat-button {
+    background: #ff4b2b;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-left: 10px;
+    transition: transform 0.2s ease-in-out, background 0.3s;
+    width: 100%;
+    margin-top: 10px;
+}
+
+#new-chat-button:hover {
+    transform: scale(1.05);
+    background: #ff6f50;
 }
 
 /* Chat Container */
@@ -185,5 +233,8 @@ button:hover {
 
     .sidebar {
         display: none; /* You can hide sidebar on mobile or make it toggle */
+    }
+    .hamburger-menu {
+        display: block;
     }
 }
