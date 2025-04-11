@@ -2,25 +2,43 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Strait-AI</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <!-- Firebase SDKs (the modular scripts will be used in our modules below) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js"></script>
 </head>
 <body>
-  <div class="chat-container">
-    <h1>Strait-AI</h1>
-    <div id="chat-box"></div>
-    <form id="chat-form">
-      <input type="text" id="user-input" placeholder="Type your message..." required />
-      <button type="submit">Send</button>
-    </form>
-    <div id="typing-indicator" style="display:none;">AI is typing...</div>
-  </div>
+  <!-- Hamburger menu button -->
+  <button id="menu-btn" class="hamburger">&#9776;</button>
 
-  <script src="{{ url_for('static', filename='firebase-config.js') }}"></script>
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <div class="container">
+    <!-- Sidebar: saved chats and new chat button -->
+    <aside id="sidebar" class="sidebar">
+      <h2>Saved Chats</h2>
+      <button id="new-chat-btn" class="new-chat-btn">+ New Chat</button>
+      <ul id="saved-chats">
+        <!-- Saved chats will be populated here -->
+      </ul>
+    </aside>
+
+    <!-- Main Chat Section -->
+    <main class="chat-section">
+      <h1>Strait-AI</h1>
+      <div id="chat-box" class="chat-box">
+        <!-- Chat messages will appear here -->
+      </div>
+      <form id="chat-form" class="chat-form">
+        <input type="text" id="user-input" placeholder="Ask something..." required />
+        <button type="submit" class="send-btn">Send</button>
+      </form>
+      <div id="typing-indicator" style="display:none;">AI is typing...</div>
+    </main>
+  </div>
+  
+  <!-- Main script (ES module) -->
+  <script type="module" src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
