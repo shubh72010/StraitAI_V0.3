@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 from transformers import AutoModelForCausalLM, AutoTokenizer
-import torch, os
+import os
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
@@ -16,8 +16,8 @@ def index():
 def chat():
     user_input = request.get_json().get("query", "").strip()
     if not user_input:
-        return jsonify({"response": "Say something first, bruh 😅"})
-
+        return jsonify({"response": "Please say something!"})
+    
     prompt = f"You: {user_input}\nAI:"
     input_ids = tokenizer.encode(prompt, return_tensors="pt")
 
@@ -35,7 +35,7 @@ def chat():
         return jsonify({"response": output})
     except Exception as e:
         print("Error:", e)
-        return jsonify({"response": "Ughh... brain fart 😵‍💫"})
+        return jsonify({"response": "Oops! Something went wrong."})
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
