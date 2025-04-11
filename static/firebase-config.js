@@ -1,8 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-// Your config
+// Your Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyD6qceA3bsMVb5fAE--699_omZEQxLCeAM",
   authDomain: "straitai-v03.firebaseapp.com",
@@ -17,5 +17,4 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Export
-export { db, auth, collection, addDoc, getDocs, query, orderBy, onAuthStateChanged, signInAnonymously };
+export { db, auth };
