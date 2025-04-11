@@ -1,11 +1,9 @@
 from flask import Flask, request, jsonify, render_template
 from transformers import AutoModelForCausalLM, AutoTokenizer
-import torch
 import os
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
-# Load distilled GPT-2 model and tokenizer
 model_name = "distilgpt2"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForCausalLM.from_pretrained(model_name)
@@ -18,9 +16,8 @@ def index():
 def chat():
     user_input = request.get_json().get("query", "").strip()
     if not user_input:
-        return jsonify({"response": "Say something first, bruh 😅"})
-
-    # Chat-style prompt format
+        return jsonify({"response": "Please say something!"})
+    
     prompt = f"You: {user_input}\nAI:"
     input_ids = tokenizer.encode(prompt, return_tensors="pt")
 
@@ -34,13 +31,11 @@ def chat():
             top_p=0.95,
             temperature=0.8
         )
-
         output = tokenizer.decode(response_ids[:, input_ids.shape[-1]:][0], skip_special_tokens=True).strip()
         return jsonify({"response": output})
-
     except Exception as e:
         print("Error:", e)
-        return jsonify({"response": "Ughh... brain fart 😵‍💫"})
+        return jsonify({"response": "Oops! Something went wrong."})
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
