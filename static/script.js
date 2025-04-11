@@ -5,6 +5,7 @@ const sidebar = document.getElementById("sidebar");
 const hamburgerMenu = document.getElementById("hamburger-menu");
 const sendButton = document.getElementById("send-button");
 const newChatButton = document.getElementById("new-chat-button");
+const chatList = document.getElementById("chat-list");
 
 const firebaseConfig = {
   apiKey: "AIzaSyD6qceA3bsMVb5fAE--699_omZEQxLCeAM",
@@ -13,7 +14,7 @@ const firebaseConfig = {
   storageBucket: "straitai-v03.appspot.com",
   messagingSenderId: "365452252559",
   appId: "1:365452252559:web:c83fdf6109666f1c7027fa",
-  measurementId: "G-XYL9Y3QB0W"
+  measurementId: "G-XYL9Y3QB0W",
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -50,13 +51,14 @@ newChatButton.addEventListener("click", function () {
 });
 
 function loadChats(uid) {
-  db.collection("users").doc(uid).collection("chats")
+  db.collection("users")
+    .doc(uid)
+    .collection("chats")
     .orderBy("timestamp", "desc")
     .get()
-    .then(snapshot => {
-      const chatList = document.getElementById("chat-list");
+    .then((snapshot) => {
       chatList.innerHTML = "";
-      snapshot.forEach(doc => {
+      snapshot.forEach((doc) => {
         const chat = doc.data();
         const chatDiv = document.createElement("div");
         chatDiv.textContent = chat.title || "New Chat";
@@ -65,62 +67,129 @@ function loadChats(uid) {
           chatBox.innerHTML = "";
           loadChatHistory(uid, currentChatId);
         };
+        // Make chatDiv editable on double-click
+        chatDiv.ondblclick = () => {
+          const currentTitle = chatDiv.textContent;
+          chatDiv.contentEditable = true;
+          chatDiv.focus();
+          chatDiv.onblur = () => {
+            const newTitle = chatDiv.textContent;
+            if (newTitle !== currentTitle) {
+              renameChat(doc.id, newTitle);
+            }
+            chatDiv.contentEditable = false;
+          };
+          chatDiv.onkeydown = (event) => {
+            if (event.key === "Enter") {
+              chatDiv.blur();
+            }
+          };
+        };
         chatList.appendChild(chatDiv);
       });
+    })
+    .catch((error) => {
+      console.error("Error loading chats:", error);
     });
 }
 
 function startNewChat() {
-  db.collection("users").doc(uid).collection("chats").add({
-    title: "New Chat",
-    timestamp: Date.now()
-  }).then(docRef => {
-    currentChatId = docRef.id;
-    chatBox.innerHTML = "";
-    loadChats(uid);
-  });
+  console.log("startNewChat called");
+  db.collection("users")
+    .doc(uid)
+    .collection("chats")
+    .add({
+      title: "New Chat",
+      timestamp: Date.now(),
+    })
+    .then((docRef) => {
+      currentChatId = docRef.id;
+      console.log("New chat created with id", currentChatId);
+      chatBox.innerHTML = "";
+      loadChats(uid);
+    })
+    .catch((error) => {
+      console.error("Error creating new chat:", error);
+    });
 }
 
 function sendMessage() {
   const message = userInput.value.trim();
-  if (message === "" || !currentChatId) return;
+  console.log(
+    "sendMessage function called, message:",
+    message,
+    "currentChatId:",
+    currentChatId
+  );
+  if (message === "" || !currentChatId) {
+    console.log("Message is empty or currentChatId is not set.");
+    return;
+  }
 
   displayMessage("You", message, "user-message");
   saveMessage("user", message);
   userInput.value = "";
 
-  const thinkingMessage = displayMessage("Strait-AI", "thinking...", "bot-message", true);
+  const thinkingMessage = displayMessage(
+    "Strait-AI",
+    "thinking...",
+    "bot-message",
+    true
+  );
 
   fetch(API_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query: message })
+    body: JSON.stringify({ query: message }),
   })
-    .then(res => res.json())
-    .then(data => {
+    .then((res) => res.json())
+    .then((data) => {
       chatBox.removeChild(thinkingMessage);
       displayMessage("Strait-AI", data.response, "bot-message");
       saveMessage("bot", data.response);
+    })
+    .catch((error) => {
+      console.error("Error during fetch operation:", error);
+      chatBox.removeChild(thinkingMessage);
+      displayMessage(
+        "Strait-AI",
+        "Error: Could not get a response.",
+        "bot-message"
+      );
     });
 }
 
 function saveMessage(role, text) {
-  if (!uid || !currentChatId) return;
-  db.collection("users").doc(uid).collection("chats")
-    .doc(currentChatId).collection("messages").add({
+  if (!uid || !currentChatId) {
+    console.log("saveMessage: uid or currentChatId is not set.");
+    return;
+  }
+  db.collection("users")
+    .doc(uid)
+    .collection("chats")
+    .doc(currentChatId)
+    .collection("messages")
+    .add({
       role,
       text,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+    })
+    .catch((error) => {
+      console.error("Error saving message:", error);
     });
 }
 
 function loadChatHistory(uid, chatId) {
-  db.collection("users").doc(uid).collection("chats")
-    .doc(chatId).collection("messages")
+  console.log("loadChatHistory called, uid:", uid, "chatId:", chatId);
+  db.collection("users")
+    .doc(uid)
+    .collection("chats")
+    .doc(chatId)
+    .collection("messages")
     .orderBy("timestamp")
     .get()
-    .then(snapshot => {
-      snapshot.forEach(doc => {
+    .then((snapshot) => {
+      snapshot.forEach((doc) => {
         const msg = doc.data();
         displayMessage(
           msg.role === "user" ? "You" : "Strait-AI",
@@ -128,6 +197,9 @@ function loadChatHistory(uid, chatId) {
           msg.role === "user" ? "user-message" : "bot-message"
         );
       });
+    })
+    .catch((error) => {
+      console.error("Error loading chat history:", error);
     });
 }
 
@@ -164,4 +236,21 @@ function animateDots(element) {
     count++;
   }, 500);
   element.dataset.interval = interval;
+}
+
+function renameChat(chatId, newTitle) {
+  if (!uid) return;
+  db.collection("users")
+    .doc(uid)
+    .collection("chats")
+    .doc(chatId)
+    .update({
+      title: newTitle,
+    })
+    .then(() => {
+      loadChats(uid); // Reload chats to update the list
+    })
+    .catch((error) => {
+      console.error("Error renaming chat:", error);
+    });
 }

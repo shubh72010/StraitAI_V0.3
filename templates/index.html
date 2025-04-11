@@ -1,38 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Strait-AI</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Strait-AI is an AI chatbot that uses distilgpt2.">
+    <title>Strait-AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 
-  <!-- Firebase CDN -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js"></script>
-</head>
-<body>
-  <div class="hamburger-menu" id="hamburger-menu">
-    <div class="bar"></div>
-    <div class="bar"></div>
-    <div class="bar"></div>
-  </div>
-
-  <div class="sidebar" id="sidebar">
-    <h2>Saved Chats</h2>
-    <div id="chat-list"></div>
-    <button id="new-chat-button">+ New Chat</button>
-  </div>
-
-  <div class="chat-container">
-    <h1>Strait-AI</h1>
-    <div class="chat-box" id="chat-box"></div>
-    <div class="input-area">
-      <input type="text" id="user-input" placeholder="Ask something..." autocomplete="off">
-      <button id="send-button">Send</button>
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js" defer></script>
+  </head>
+  <body>
+    <div class="hamburger-menu" id="hamburger-menu">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
     </div>
-  </div>
-
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
-</body>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+  </body>
 </html>
